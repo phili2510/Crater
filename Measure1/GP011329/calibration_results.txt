@@ -1,0 +1,43 @@
+KAMERA-KALIBRIERUNG (MIT LICHTBRECHUNG)
+==================================================
+
+Brechungsindizes: n_air = 1.0, n_water = 1.333
+Bild: GP011329.JPG
+Kamera-Kalibrierung: VERWENDET
+  NPZ-Datei: C:\Users\PCUser\PycharmProjects\Crater\camCalib\camera_calib(1).npz
+  Alpha: 1.0
+ROI-Größe: 4980 x 2891 px (1:1 Seitenverhältnis)
+
+KAMERAPOSITION (cm):
+  X = 25.062
+  Y = -26.974
+  Z = 19.892
+
+FEHLERANALYSE (MIT LICHTBRECHUNG):
+  Luftstrahl 1: 0.375569 cm
+  Luftstrahl 2: 0.873971 cm
+  Luftstrahl 3: 0.776859 cm
+  Luftstrahl 4: 0.825031 cm
+  Mittelwert: 0.712858 cm
+
+VIRTUELLE PUNKTE (cm):
+[[15.44417671  0.         25.80145278]
+ [39.01943775  0.         25.60221377]
+ [39.25140562  0.         12.52715323]
+ [15.12674699  0.         12.65167762]]
+
+REALE PUNKTE (cm):
+[[ 0.  60.8 36. ]
+ [60.8 60.8 36. ]
+ [60.8 60.8  0. ]
+ [ 0.  60.8  0. ]]
+
+ROTESTE PIXEL DETECTION:
+  Anzahl vertikaler Linien: 500
+  Marker-Größe: 5 px
+  Gefundene Pixel: 500
+
+LASER-LINIEN-REKONSTRUKTION (MIT LICHTBRECHUNG):
+  Anzahl 3D-Punkte: 200
+  X-Bereich: -1.08 bis 61.74 cm
+  Y-Bereich: -32.41 bis -29.28 cm

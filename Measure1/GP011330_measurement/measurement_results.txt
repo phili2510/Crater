@@ -1,0 +1,14 @@
+MESSBILD-VERARBEITUNG (MIT LICHTBRECHUNG)
+==================================================
+
+Brechungsindizes: n_air = 1.0, n_water = 1.333
+Messbild: GP011330.JPG
+Kalibrierungsdaten verwendet: JA
+Kameraposition: (25.062, -26.974, 19.892) cm
+ROI-Größe: 4980 x 2891 px
+Boden-ROI-Größe: 2624 x 2624 px
+
+ROTESTE PIXEL DETECTION:
+  Anzahl vertikaler Linien: 500
+  Marker-Größe: 5 px
+  Gefundene Pixel: 500

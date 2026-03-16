@@ -1,0 +1,36 @@
+KAMERA-KALIBRIERUNG
+==================================================
+
+Bild: GP011281.JPG
+Linsenentzerrung: DEAKTIVIERT
+ROI-Größe: 4892 x 2897 px
+
+KAMERAPOSITION (cm):
+  X = 29.232
+  Y = -35.553
+  Z = 15.952
+
+FEHLERANALYSE:
+  Gerade 1: 0.099577 cm
+  Gerade 2: 0.296919 cm
+  Gerade 3: 0.234408 cm
+  Gerade 4: 0.567101 cm
+  Mittelwert: 0.299501 cm
+
+VIRTUELLE PUNKTE (cm):
+[[18.4313982   0.         23.28753883]
+ [40.91447261  0.         23.16327235]
+ [41.00147179  0.          9.9661719 ]
+ [18.31954211  0.         10.40110459]]
+
+REALE PUNKTE (cm):
+[[ 0.  60.8 36. ]
+ [60.8 60.8 36. ]
+ [60.8 60.8  0. ]
+ [ 0.  60.8  0. ]]
+
+LASER-GRID-TRACKING:
+  Vertikale Linien: 0
+  Horizontale Linien: 0
+  Rand-Margin: 1.0%
+  Gap-Toleranz: 1.0%
