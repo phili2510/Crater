@@ -15,8 +15,8 @@ from scipy.signal import find_peaks
 # =======================
 # EINGABEN
 # =======================
-CALIBRATION_IMAGE_PATH = r'/Users/philippadelbrecht/PycharmProjects/Crater/Evaluation+plotting/Measure2/GP011342.JPG'
-MEASUREMENT_IMAGE_PATH = r'/Users/philippadelbrecht/PycharmProjects/Crater/Evaluation+plotting/Measure2/GP011339.JPG'  # NEUES MESSBILD
+CALIBRATION_IMAGE_PATH = r'/Users/philippadelbrecht/PycharmProjects/Crater/Evaluation+plotting/Volume/Volume3/Calibration-Line.JPG'
+MEASUREMENT_IMAGE_PATH = r'/Users/philippadelbrecht/PycharmProjects/Crater/Evaluation+plotting/Volume/Volume3/300-400_600ml_40cm.JPG'  # NEUES MESSBILD
 
 # =======================
 # KAMERA-KALIBRIERUNG (LINSENENTZERRUNG)
@@ -39,8 +39,8 @@ N_WATER = 1.333  # Brechungsindex Wasser
 # REALE KOORDINATEN DER KALIBRIERPUNKTE (3D-Weltkoordinaten)
 # =======================
 REAL_POINTS = np.array([
-    [0.0, 60.8, 36.0],
-    [60.8, 60.8, 36.0],
+    [0.0, 60.8, 40.0],
+    [60.8, 60.8, 40.0],
     [60.8, 60.8, 0.0],
     [0.0, 60.8, 0.0],
 ], dtype=float)
@@ -48,14 +48,65 @@ REAL_POINTS = np.array([
 # =======================
 # VORDEFINIERTE WERTE (None = manuelle Auswahl)
 # =======================
-# Kameraposition [x, y, z] in cm oder None für manuelle Kalibrierung
-PREDEFINED_CAMERA_POSITION = np.array([31.488, -28.064, 21.115])#np.array((25.683, -26.707, 20.403))  # Setze auf None um Brechungskorrektur zu testen
+# Kameraposition [x, y, z] in cm
+PREDEFINED_CAMERA_POSITION = np.array([29.806, -26.608, 19.870])
+    #np.array([29.90387555, -29.18157605, 30.60156197])
+    #Size (np.array([30.78630772, -27.72430586, 20.39873773]))
+    #Volume1: (np.array([30.7, -27.8, 22.7]))
 
-# ROI-Quad: 4 Punkte [(x1,y1), (x2,y2), (x3,y3), (x4,y4)] oder None
-PREDEFINED_ROI_QUAD = np.array([[240, 1319], [5120, 1237], [5240, 4105], [265, 4187]], dtype=np.float32)#np.array([[361, 1326], [5290, 1184], [5494, 3843], [500, 4439]], dtype=np.float32)
+# ROI-Quad: 4 Punkte [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
+PREDEFINED_ROI_QUAD = np.array([
+    [403, 1205],
+    [5303, 1069],
+    [5448, 4324],
+    [420, 4372]
+], dtype=np.float32)
+    #(np.array([
+    #[411, 2002],
+    #[5385, 1873],
+    #[5451, 4309],
+    #[385, 4350]
+#], dtype=np.float32))
+    #Size: (np.array([
+    #[289, 1141],
+    #[5171, 1022],
+    #[5295, 4254],
+    #[311, 4377]
+#], dtype=np.float32))
 
-# Boden-ROI-Quad: 4 Punkte [(x1,y1), (x2,y2), (x3,y3), (x4,y4)] oder None
-PREDEFINED_FLOOR_QUAD = np.array([[1555, 1854], [3468, 1833], [4904, 2832], [55, 2826]], dtype=np.float32)#np.array([[1270, 1861], [3198, 1870], [4909, 2874], [47, 2839]], dtype=np.float32)
+    # Volume: (np.array([
+    #[237, 1471],   # Punkt 1
+    #[5132, 1436],  # Punkt 2
+    #[5262, 4215],  # Punkt 3
+    #[200, 4353]    # Punkt 4
+#], dtype=np.float32))
+
+# Boden-ROI-Quad: 4 Punkte [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
+PREDEFINED_FLOOR_QUAD = np.array([
+    [1483, 2070],
+    [3435, 2048],
+    [4937, 3191],
+    [55, 3185]
+], dtype=np.float32)
+    #(np.array([
+    #[1513, 1259],
+    #[3477, 1258],
+    #[4971, 2325],
+    #[93, 2305]
+#], dtype=np.float32))
+#Size: (np.array([
+    #[1509, 2113],
+    #[3457, 2128],
+    #[4873, 3214],
+    #[39, 3171]
+#], dtype=np.float32))
+#Volume: (np.array([
+#    [1523, 1743],  # Punkt 1
+#    [3473, 1728],  # Punkt 2
+#    [4967, 2808],  # Punkt 3
+#    [48, 2787]     # Punkt 4
+#], dtype=np.float32))
+
 
 # =======================
 # AQUARIUM-GEOMETRIE
@@ -1807,7 +1858,7 @@ def compare_calibration_measurement_profiles(calibration_data, measurement_data,
     Args:
         calibration_data: Dictionary mit Kalibrierungsdaten
         measurement_data: Dictionary mit Messdaten (kann None sein)
-        output_path: Pfad zum Speichern der CSV-Datei
+        output_path: Pfad zum Speichern der CSV-Datei (wird ignoriert, da neuer Ordner verwendet wird)
 
     Returns:
         Dictionary mit Vergleichsergebnissen
@@ -1882,21 +1933,28 @@ def compare_calibration_measurement_profiles(calibration_data, measurement_data,
         return None
 
     # ============================================================
-    # 5. SPEICHERE X/Y/Z-KOORDINATEN IN CSV
+    # 5. ERSTELLE RESULTS-ORDNER UND SPEICHERE CSVs
     # ============================================================
-    csv_path = output_path.parent / "measurement_points.csv"
+    # Verwende measurement_data['output_dir'] als Basis und erstelle _results Ordner
+    measurement_output_dir = Path(measurement_data['output_dir'])
+    results_dir = measurement_output_dir.parent / f"{measurement_output_dir.stem}_results"
+    results_dir.mkdir(parents=True, exist_ok=True)
 
+    print(f"\n[INFO] Results-Ordner: {results_dir}")
+
+    # ============================================================
+    # CSV 1: MEASUREMENT_POINTS (X/Y/Z-Koordinaten)
+    # ============================================================
     import csv
+
+    csv_points_path = results_dir / "measurement_points.csv"
 
     print(f"\n[INFO] Speichere {len(meas_ray_hits)} Messpunkte in CSV...")
 
-    with open(csv_path, 'w', newline='', encoding='utf-8') as csvfile:
+    with open(csv_points_path, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
-
-        # Header
         writer.writerow(['x_cm', 'y_cm', 'z_cm'])
 
-        # Schreibe jeden Punkt
         for point in meas_ray_hits:
             writer.writerow([
                 f"{point[0]:.6f}",
@@ -1904,17 +1962,73 @@ def compare_calibration_measurement_profiles(calibration_data, measurement_data,
                 f"{point[2]:.6f}"
             ])
 
-    print(f"[OK] Messpunkte gespeichert: {csv_path}")
-    print(f"     Anzahl Punkte: {len(meas_ray_hits)}")
-    print(f"     X-Bereich: {meas_ray_hits[:, 0].min():.2f} bis {meas_ray_hits[:, 0].max():.2f} cm")
-    print(f"     Y-Bereich: {meas_ray_hits[:, 1].min():.2f} bis {meas_ray_hits[:, 1].max():.2f} cm")
-    print(f"     Z-Bereich: {meas_ray_hits[:, 2].min():.2f} bis {meas_ray_hits[:, 2].max():.2f} cm")
+    print(f"[OK] Messpunkte gespeichert: {csv_points_path}")
 
-    # Return Dictionary (für Kompatibilität)
-    # Berechne Statistiken für Kompatibilität
+    # ============================================================
+    # CSV 2: METADATA
+    # ============================================================
+    csv_metadata_path = results_dir / "metadata.csv"
+
     z_values = meas_ray_hits[:, 2]
 
-    # Return Dictionary (für Kompatibilität)
+    metadata = {
+        'measurement_image': Path(MEASUREMENT_IMAGE_PATH).name,
+        'calibration_image': Path(CALIBRATION_IMAGE_PATH).name,
+        'num_points': len(meas_ray_hits),
+        'camera_x_cm': K[0],
+        'camera_y_cm': K[1],
+        'camera_z_cm': K[2],
+        'n_air': N_AIR,
+        'n_water': N_WATER,
+        'calibration_y_plane_cm': y_calib,
+        'x_min_cm': meas_ray_hits[:, 0].min(),
+        'x_max_cm': meas_ray_hits[:, 0].max(),
+        'y_min_cm': meas_ray_hits[:, 1].min(),
+        'y_max_cm': meas_ray_hits[:, 1].max(),
+        'z_min_cm': z_values.min(),
+        'z_max_cm': z_values.max(),
+        'z_mean_cm': z_values.mean(),
+        'z_std_cm': z_values.std(),
+        'z_range_cm': z_values.max() - z_values.min(),
+        'tank_width_x_cm': TANK_WIDTH_X,
+        'tank_depth_y_cm': TANK_DEPTH_Y,
+        'tank_height_z_cm': TANK_HEIGHT_Z,
+        'num_vertical_lines': NUM_VERTICAL_LINES,
+        'num_dense_samples': NUM_DENSE_SAMPLES,
+        'outlier_median_window': OUTLIER_MEDIAN_WINDOW,
+        'outlier_mad_factor': OUTLIER_MAD_FACTOR,
+        'outlier_mad_floor': OUTLIER_MAD_FLOOR,
+        'calibration_fit_method': CALIBRATION_FIT_METHOD,
+        'undistort_alpha': UNDISTORT_ALPHA,
+        'camera_calibration_used': CAMERA_CALIBRATION_NPZ is not None
+    }
+
+    print(f"\n[INFO] Speichere Metadata...")
+
+    with open(csv_metadata_path, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['parameter', 'value'])
+
+        for key, value in metadata.items():
+            writer.writerow([key, value])
+
+    print(f"[OK] Metadata gespeichert: {csv_metadata_path}")
+
+    # ============================================================
+    # AUSGABE-STATISTIKEN
+    # ============================================================
+    print(f"\n{'=' * 60}")
+    print("ERGEBNIS-STATISTIKEN")
+    print(f"{'=' * 60}")
+    print(f"Anzahl Punkte: {len(meas_ray_hits)}")
+    print(f"X-Bereich: {meas_ray_hits[:, 0].min():.2f} bis {meas_ray_hits[:, 0].max():.2f} cm")
+    print(f"Y-Bereich: {meas_ray_hits[:, 1].min():.2f} bis {meas_ray_hits[:, 1].max():.2f} cm")
+    print(f"Z-Bereich: {z_values.min():.2f} bis {z_values.max():.2f} cm")
+    print(f"Z-Mittelwert: {z_values.mean():.2f} cm")
+    print(f"Z-Standardabweichung: {z_values.std():.2f} cm")
+    print(f"Z-Spannweite: {z_values.max() - z_values.min():.2f} cm")
+
+    # Return Dictionary
     return {
         'measurement_points_3d': meas_ray_hits.tolist(),
         'num_points': len(meas_ray_hits),
@@ -1926,7 +2040,9 @@ def compare_calibration_measurement_profiles(calibration_data, measurement_data,
             'range': float(z_values.max() - z_values.min())
         },
         'output_files': {
-            'csv_file': str(csv_path)
+            'csv_points': str(csv_points_path),
+            'csv_metadata': str(csv_metadata_path),
+            'results_dir': str(results_dir)
         }
     }
 
